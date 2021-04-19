@@ -1,0 +1,71 @@
+{
+  "Routes": [
+    {
+      //下游服务配置
+      "DownstreamPathTemplate": "/api/admin/{controller}/{action}", //你的api路径
+      "DownstreamScheme": "http",
+      //上游服务配置
+      "UpstreamPathTemplate": "/api/admin/{controller}/{action}", //你映射的路径
+      "UpstreamHttpMethod": [ "Put", "Delete", "Get", "Post" ], //请求方法
+
+      "ServiceName": "Windows.Admin.Service", //你的服务名称
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "FileCacheOptions": {
+        "TtlSeconds": 5,
+        "Region": "CacheArea"
+      },
+      "ReRoutesCaseSensitive": false
+      //"DownstreamHostAndPorts": [
+      //  {
+      //    "Host": "192.168.0.5",
+      //    "Port": 9001
+      //  }
+      //]
+    },
+    {
+      //下游服务配置
+      "DownstreamPathTemplate": "/api/oa/{controller}/{action}", //你的api路径
+      "DownstreamScheme": "http",
+      //上游服务配置
+      "UpstreamPathTemplate": "/api/oa/{controller}/{action}", //你映射的路径
+      "UpstreamHttpMethod": [ "Put", "Delete", "Get", "Post" ], //请求方法
+
+      "ServiceName": "Windows.OA.Service", //你的服务名称
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      },
+      "ReRoutesCaseSensitive": false
+      //"DownstreamHostAndPorts": [
+      //  {
+      //    "Host": "192.168.0.5",
+      //    "Port": 9002
+      //  }
+      //]
+    }
+  ],
+  "GlobalConfiguration": {
+    //服务发现配置
+    "ServiceDiscoveryProvider": {
+      "BaseUrl": "http://192.168.0.5:5000",
+      //注册中心Consul地址
+      "Host": "192.168.0.46",
+      //注册中心Consul端口号
+      "Port": 8500,
+      "Type": "Consul"
+      //以毫秒为单位，告诉Ocelot多久调用一次Consul来更改服务配置。
+      //"PollingInterval": 100,
+      //若是你有在Consul上配置key/value，则在这里输入配置key。
+      //"ConfigurationKey": "MyService_AB"
+    }
+  },
+  "QoSOptions": {
+    //代表发生错误的次数
+    "ExceptionsAllowedBeforeBreaking": 3,
+    //代表熔断时间
+    "DurationOfBreak": 10000,
+    //代表超时时间
+    "TimeoutValue": 5000
+  }
+}
