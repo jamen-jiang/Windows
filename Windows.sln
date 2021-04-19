@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6CEC17D5-061
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{270D6D7E-4D69-4169-9985-55CE4F36F53C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Gateway", "src\Windows.Gateway\Windows.Gateway.csproj", "{1410B851-E3EA-4570-91E6-B4456CE48DB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Gateway", "src\Windows.Gateway\Windows.Gateway.csproj", "{1410B851-E3EA-4570-91E6-B4456CE48DB4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00.Gateway", "00.Gateway", "{F844BC97-03CC-418D-95DA-3B3FA522A334}"
 EndProject
@@ -19,31 +19,33 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01.Admin", "01.Admin", "{0A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02.OA", "02.OA", "{9F28DEA4-339D-4AF0-A360-ED0F39E7F676}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Admin.Application", "src\Windows.Admin.Application\Windows.Admin.Application.csproj", "{70583B86-BB5F-47C0-A653-FA34F6B69808}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Admin.Application", "src\Windows.Admin.Application\Windows.Admin.Application.csproj", "{70583B86-BB5F-47C0-A653-FA34F6B69808}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Admin.Domain", "src\Windows.Admin.Domain\Windows.Admin.Domain.csproj", "{3C55F924-D148-433E-B682-0FE67AEE3F5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Admin.Domain", "src\Windows.Admin.Domain\Windows.Admin.Domain.csproj", "{3C55F924-D148-433E-B682-0FE67AEE3F5D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Admin.Infrastructure", "src\Windows.Admin.Infrastructure\Windows.Admin.Infrastructure.csproj", "{BEF63829-5FE4-4384-A1EF-B1CC1ECF67D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Admin.Infrastructure", "src\Windows.Admin.Infrastructure\Windows.Admin.Infrastructure.csproj", "{BEF63829-5FE4-4384-A1EF-B1CC1ECF67D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Admin.Infrastructure.EFCore", "src\Windows.Admin.Infrastructure.EFCore\Windows.Admin.Infrastructure.EFCore.csproj", "{9A388326-B61E-43A6-BE38-5B9D6732ED7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Admin.Infrastructure.EFCore", "src\Windows.Admin.Infrastructure.EFCore\Windows.Admin.Infrastructure.EFCore.csproj", "{9A388326-B61E-43A6-BE38-5B9D6732ED7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Api.Shared", "src\Windows.Api.Shared\Windows.Api.Shared.csproj", "{66E7B4DE-6F89-431A-AE51-A8374BEA6C7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Api.Shared", "src\Windows.Api.Shared\Windows.Api.Shared.csproj", "{66E7B4DE-6F89-431A-AE51-A8374BEA6C7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Application.Shared", "src\Windows.Application.Shared\Windows.Application.Shared.csproj", "{5098E449-0FEE-4112-BCD3-EB52B182F062}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Application.Shared", "src\Windows.Application.Shared\Windows.Application.Shared.csproj", "{5098E449-0FEE-4112-BCD3-EB52B182F062}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Infrastructure", "src\Windows.Infrastructure\Windows.Infrastructure.csproj", "{0FFAFD7D-F94E-4390-AFE5-9B9CCBC3F7E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Infrastructure", "src\Windows.Infrastructure\Windows.Infrastructure.csproj", "{0FFAFD7D-F94E-4390-AFE5-9B9CCBC3F7E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Infrastructure.EFCore", "src\Windows.Infrastructure.EFCore\Windows.Infrastructure.EFCore.csproj", "{E5363DDF-E0DF-4398-BABD-E9C58E16C81E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Infrastructure.EFCore", "src\Windows.Infrastructure.EFCore\Windows.Infrastructure.EFCore.csproj", "{E5363DDF-E0DF-4398-BABD-E9C58E16C81E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.SeedWork", "src\Windows.SeedWork\Windows.SeedWork.csproj", "{1673467F-51AC-4A08-ADFD-034E355AC51C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.SeedWork", "src\Windows.SeedWork\Windows.SeedWork.csproj", "{1673467F-51AC-4A08-ADFD-034E355AC51C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Admin.Api", "src\Windows.Admin.Api\Windows.Admin.Api.csproj", "{BEE41199-5E9E-4C8B-B490-726669D4FF5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.Admin.Api", "src\Windows.Admin.Api\Windows.Admin.Api.csproj", "{BEE41199-5E9E-4C8B-B490-726669D4FF5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.OA.Api", "src\Windows.OA.Api\Windows.OA.Api.csproj", "{7E170E82-793C-4F8C-8E1E-358EB67600A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.OA.Api", "src\Windows.OA.Api\Windows.OA.Api.csproj", "{7E170E82-793C-4F8C-8E1E-358EB67600A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.OA.Application", "src\Windows.OA.Application\Windows.OA.Application.csproj", "{19A4EF5B-E2E0-47E5-BCE2-85C49A6AC6AD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.OA.Application", "src\Windows.OA.Application\Windows.OA.Application.csproj", "{19A4EF5B-E2E0-47E5-BCE2-85C49A6AC6AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.OA.Domain", "src\Windows.OA.Domain\Windows.OA.Domain.csproj", "{09993D2D-88DD-45F6-A8FB-BE835D458B86}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Windows.OA.Domain", "src\Windows.OA.Domain\Windows.OA.Domain.csproj", "{09993D2D-88DD-45F6-A8FB-BE835D458B86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows.Test", "test\Windows.Test\Windows.Test.csproj", "{3A9DB9A0-1500-4BAE-8EA0-0611537995FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +109,10 @@ Global
 		{09993D2D-88DD-45F6-A8FB-BE835D458B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09993D2D-88DD-45F6-A8FB-BE835D458B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09993D2D-88DD-45F6-A8FB-BE835D458B86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A9DB9A0-1500-4BAE-8EA0-0611537995FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A9DB9A0-1500-4BAE-8EA0-0611537995FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A9DB9A0-1500-4BAE-8EA0-0611537995FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A9DB9A0-1500-4BAE-8EA0-0611537995FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +137,7 @@ Global
 		{7E170E82-793C-4F8C-8E1E-358EB67600A4} = {9F28DEA4-339D-4AF0-A360-ED0F39E7F676}
 		{19A4EF5B-E2E0-47E5-BCE2-85C49A6AC6AD} = {9F28DEA4-339D-4AF0-A360-ED0F39E7F676}
 		{09993D2D-88DD-45F6-A8FB-BE835D458B86} = {9F28DEA4-339D-4AF0-A360-ED0F39E7F676}
+		{3A9DB9A0-1500-4BAE-8EA0-0611537995FC} = {270D6D7E-4D69-4169-9985-55CE4F36F53C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FCB1AA69-2AF0-4D65-A9E2-989F27064A3A}
