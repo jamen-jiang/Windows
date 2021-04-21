@@ -57,7 +57,7 @@ namespace Windows.Admin.Domain.Enums
         Post
     }
     /// <summary>
-    /// 操作类型
+    /// 性别类型
     /// </summary>
     public enum GenderEnum
     {

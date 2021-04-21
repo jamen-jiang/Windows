@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Windows.Application.Shared\Windows.Application.Shared.csproj" />
+    <ProjectReference Include="..\Windows.Module.Domain\Windows.Module.Domain.csproj" />
+    <ProjectReference Include="..\Windows.Module.Infrastructure.EFCore\Windows.Module.Infrastructure.EFCore.csproj" />
+  </ItemGroup>
+
+</Project>

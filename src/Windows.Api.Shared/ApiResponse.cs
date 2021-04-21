@@ -1,4 +1,4 @@
-﻿using Windows.Api.Shared.Enums;
+﻿using Windows.Application.Shared.Enums;
 using Windows.Infrastructure.Extensions;
 
 namespace Windows.Api.Shared

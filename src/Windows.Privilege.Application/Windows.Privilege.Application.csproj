@@ -5,8 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Windows.Application.Shared\Windows.Application.Shared.csproj" />
-    <ProjectReference Include="..\Windows.Infrastructure\Windows.Infrastructure.csproj" />
+    <ProjectReference Include="..\Windows.Privilege.Infrastructure.EFCore\Windows.Privilege.Infrastructure.EFCore.csproj" />
   </ItemGroup>
 
 </Project>

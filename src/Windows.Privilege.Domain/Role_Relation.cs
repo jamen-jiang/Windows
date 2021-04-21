@@ -1,11 +1,11 @@
 using Windows.SeedWork;
 
-namespace Windows.Admin.Domain
+namespace Windows.Privilege.Domain
 {
-    public partial class Role_User : Entity
+    public partial class Role_Relation : Entity
     {
-        public Role_User() { }
-        public Role_User(int roleId, int type,int userId)
+        public Role_Relation() { }
+        public Role_Relation(int roleId, int type,int userId)
         {
             RoleId = roleId;
             Type = type;
