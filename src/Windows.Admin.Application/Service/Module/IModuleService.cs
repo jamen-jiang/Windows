@@ -1,7 +1,6 @@
-﻿using Jyz.Domain;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Admin.Domain;
 
 namespace Windows.Admin.Application
 {
@@ -12,7 +11,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="privilegeIds"></param>
         /// <returns></returns>
-        List<Module> GetListByPrivilegeIds(List<Guid> privilegeIds);
+        List<Module> GetListByPrivilegeIds(List<int> privilegeIds);
         /// <summary>
         /// 获取模块列表
         /// </summary>
@@ -24,7 +23,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<ModuleResponse> Detail(Guid id);
+        Task<ModuleResponse> Detail(int id);
         /// <summary>
         /// 获取模块目录列表
         /// </summary>
@@ -51,6 +50,6 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<List<Guid>> GetCurrentAndChildrenIdList(Guid id);
+        Task<List<int>> GetCurrentAndChildrenIdList(int id);
     }
 }

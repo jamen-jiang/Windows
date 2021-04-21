@@ -1,7 +1,7 @@
-﻿using Jyz.Domain;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Admin.Domain;
+using Windows.Application.Shared.Dto;
 
 namespace Windows.Admin.Application
 {
@@ -12,7 +12,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="privilegeIds"></param>
         /// <returns></returns>
-        List<Operate> GetListByPrivilegeIds(List<Guid> privilegeIds);
+        List<Operate> GetListByPrivilegeIds(List<int> privilegeIds);
         /// <summary>
         /// 获取对应的功能列表
         /// </summary>
@@ -24,7 +24,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-         Task<OperateResponse> Detail(Guid id);
+         Task<OperateResponse> Detail(int id);
         /// <summary>
         /// 添加
         /// </summary>

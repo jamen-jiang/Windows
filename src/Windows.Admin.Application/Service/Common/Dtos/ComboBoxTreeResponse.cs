@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Windows.SeedWork;
 
 namespace Windows.Admin.Application
 {

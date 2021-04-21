@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
-using Jyz.Domain;
-using Jyz.Domain.Enums;
-using Jyz.Infrastructure;
-using Jyz.Infrastructure.Data;
-using Jyz.Infrastructure.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Admin.Domain;
+using Windows.Admin.Domain.Enums;
+using Windows.Admin.Infrastructure.EFCore;
+using Windows.Application.Shared.Dto;
+using Windows.Application.Shared.Service;
+using Windows.Infrastructure.EFCore;
+using Windows.Infrastructure.Extensions;
 
 namespace Windows.Admin.Application
 {
@@ -16,10 +18,12 @@ namespace Windows.Admin.Application
     {
         private readonly IMapper _mapper;
         private readonly IModuleService _moduleSvc;
-        public OperateService(IMapper mapper, IModuleService moduleSvc)
+        private readonly AdminDbContext _db;
+        public OperateService(AdminDbContext db,IMapper mapper, IModuleService moduleSvc)
         {
             _mapper = mapper;
             _moduleSvc = moduleSvc;
+            _db = db;
         }
         /// <summary>
         /// 获取所有操作Url
@@ -29,9 +33,9 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<List<OperateUrlResponse>> GetAllOperateUrl()
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var operates= await db.Operate.Include(x => x.Module).AsNoTracking().ToListAsync();
+                var operates= await _db.Operate.Include(x => x.Module).AsNoTracking().ToListAsync();
                 return _mapper.Map<List<OperateUrlResponse>>(operates);
             }
         }
@@ -40,12 +44,12 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="privilegeIds"></param>
         /// <returns></returns>
-        public List<Operate> GetListByPrivilegeIds(List<Guid> privilegeIds)
+        public List<Operate> GetListByPrivilegeIds(List<int> privilegeIds)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var moduleIds = db.Privilege.Where(x => privilegeIds.Contains(x.Id) && x.Access == AccessEnum.Operate.ToString()).Select(s => s.AccessValue).ToArray();
-                List<Operate> operates = db.Operate.Where(x => moduleIds.Contains(x.Id)).ToList();
+                var moduleIds = _db.Privilege.Where(x => privilegeIds.Contains(x.Id) && x.Access == AccessEnum.Operate.ToString()).Select(s => s.AccessValue).ToArray();
+                List<Operate> operates = _db.Operate.Where(x => moduleIds.Contains(x.Id)).ToList();
                 return operates;
             }
         }
@@ -56,11 +60,11 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async  Task<PageResponse<OperateResponse>> Query(PageRequest<OperateRequest> info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
                 PageResponse<OperateResponse> model = new PageResponse<OperateResponse>();
-                var query = db.Operate.AsNoTracking();
-                if (!info.Query.ModuleId.IsEmpty())
+                var query = _db.Operate.AsNoTracking();
+                if (info.Query.ModuleId != 0)
                 {
                     var ids = await _moduleSvc.GetCurrentAndChildrenIdList(info.Query.ModuleId);
                     query = query.Where(x => ids.Contains(x.ModuleId));
@@ -81,11 +85,11 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<OperateResponse> Detail(Guid id)
+        public async Task<OperateResponse> Detail(int id)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                Operate operate = await db.Operate.FindByIdAsync(id);
+                Operate operate = await _db.Operate.FindByIdAsync(id);
                 return _mapper.Map<OperateResponse>(operate);
             }
         }
@@ -96,12 +100,12 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task Add(OperateAddRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             { 
                 Operate model = _mapper.Map<Operate>(info);
-                BeforeAdd(model);
-                await db.Operate.AddAsync(model);
-                await db.SaveChangesAsync();
+                //BeforeAdd(model);
+                await _db.Operate.AddAsync(model);
+                await _db.SaveChangesAsync();
             }
         }
         /// <summary>
@@ -110,12 +114,12 @@ namespace Windows.Admin.Application
         /// <param name="info"></param>
         public async Task Modify(OperateModifyRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                Operate model = await db.Operate.FindByIdAsync(info.Id);
+                Operate model = await _db.Operate.FindByIdAsync(info.Id);
                 _mapper.Map(info,model);
-                BeforeModify(model);
-                await db.SaveChangesAsync();
+                //BeforeModify(model);
+                await _db.SaveChangesAsync();
             }
         }
     }

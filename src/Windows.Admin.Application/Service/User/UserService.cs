@@ -1,16 +1,20 @@
 ﻿using AutoMapper;
-using Jyz.Domain;
-using Jyz.Domain.Enums;
 using Jyz.Infrastructure;
-using Jyz.Infrastructure.Data;
-using Jyz.Infrastructure.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Windows.Admin.Domain;
+using Windows.Admin.Domain.Enums;
+using Windows.Admin.Infrastructure.EFCore;
+using Windows.Admin.Infrastructure.EFCore.Extensions;
+using Windows.Api.Shared;
+using Windows.Application.Shared.Dto;
+using Windows.Application.Shared.Service;
+using Windows.Infrastructure.EFCore;
+using Windows.Infrastructure.Extensions;
+using Microsoft.Data.SqlClient;
 
 namespace Windows.Admin.Application
 {
@@ -18,10 +22,12 @@ namespace Windows.Admin.Application
     {
         private readonly IMapper _mapper;
         private readonly ICache _cache;
-        public UserService(IMapper mapper, ICache cache)
+        private readonly AdminDbContext _db;
+        public UserService(AdminDbContext db,IMapper mapper, ICache cache)
         {
             _mapper = mapper;
             _cache = cache;
+            _db = db;
         }
         /// <summary>
         /// 登录(返回token)
@@ -30,17 +36,17 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<LoginResponse> Login(LoginRequest info)
         {
-            using (var db = base.NewDB())
+            using (_db)
             {
-                User user =  await db.User.FirstOrDefaultAsync(x => x.UserName == info.UserName && x.PassWord == info.PassWord);
+                User user =  await _db.User.FirstOrDefaultAsync(x => x.UserName == info.UserName && x.PassWord == info.PassWord);
                 if (user == null)
                     throw new ApiException("用户名或密码错误!");
-                Token ts = new Token();
-                ts.UserId = user.Id;
-                ts.UserName = user.Name;
-                string token = JwtUtils.SetJwtEncode(ts);
+                //Token ts = new Token();
+                //ts.UserId = user.Id;
+                //ts.UserName = user.Name;
+                //string token = JwtUtils.SetJwtEncode(ts);
                 LoginResponse response = new LoginResponse();
-                response.Token = token;
+                //response.Token = token;
                 return response;
             }
         }
@@ -52,17 +58,17 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<PageResponse<UserResponse>> Query(PageRequest<UserRequest> info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
                 PageResponse<UserResponse> model = new PageResponse<UserResponse>();
-                var query = db.User.AsNoTracking().Where(x => x.Id != AppSetting.SystemConfig.Admin.ToGuid());
-                var organizations = await db.Organization.AsNoTracking().ToListAsync();
+                var query = _db.User.AsNoTracking().Where(x => x.Id != 1);
+                var organizations = await _db.Organization.AsNoTracking().ToListAsync();
                 var organizationDtos = _mapper.Map<List<OrganizationResponse>>(organizations);
-                if (!info.Query.OrganizationId.IsEmpty())
+                if (info.Query.OrganizationId!=0)
                 {
                     List<object> ids = new List<object>();
                     GetCurrentAndChildrenIds(organizationDtos, ids, info.Query.OrganizationId.ToString(), true);
-                    query = query.GetByOrganizationIds(ids.Select(s => s.ToGuid()).ToArray());
+                    query = query.GetByOrganizationIds(ids.Select(s => s.ToInt()).ToArray());
                 }
                 if (!info.Query.Name.IsNullOrEmpty())
                     query = query.Where(x => x.Name.Contains(info.Query.Name));
@@ -88,7 +94,7 @@ namespace Windows.Admin.Application
                     {
                         string organizationName = "";
                         List<OrganizationResponse> outList = new List<OrganizationResponse>();
-                        var organization = organizationDtos.FirstOrDefault(x => x.Id.ToGuid() == organizationId);
+                        var organization = organizationDtos.FirstOrDefault(x => x.Id.ToInt() == organizationId);
                         GetCurrentAndParents(organizationDtos, outList, organization);
                         foreach (var obj in outList)
                         {
@@ -106,12 +112,12 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        public async Task<List<UserResponse>> GetRoleUsers(Guid roleId)
+        public async Task<List<UserResponse>> GetRoleUsers(int roleId)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var users = await (from a in db.User
-                                   join b in db.Role_User on a.Id equals b.UserId
+                var users = await (from a in _db.User
+                                   join b in _db.Role_User on a.Id equals b.UserId
                                    where b.RoleId == roleId
                                    select a).ToListAsync();
                 return _mapper.Map<List<UserResponse>>(users);
@@ -122,22 +128,22 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<UserResponse> Detail(Guid id)
+        public async Task<UserResponse> Detail(int id)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var model = await db.User.Include(x => x.Organization_User).Include(x => x.Role_User).FindByIdAsync(id);
-                //var organization = await db.Organization.GetByUserId(id).Select(s=>s.Id).ToListAsync();
+                var model = await _db.User.Include(x => x.Organization_User).Include(x => x.Role_User).FindByIdAsync(id);
+                //var organization = await _db.Organization.GetByUserId(id).Select(s=>s.Id).ToListAsync();
                 var dto = _mapper.Map<UserResponse>(model);
-                var organizations = await db.Organization.AsNoTracking().ToListAsync();
+                var organizations = await _db.Organization.AsNoTracking().ToListAsync();
                 var organizationDtos = _mapper.Map<List<OrganizationResponse>>(organizations);
-                var roles = await db.Role.Where(x => dto.RoleIds.Contains(x.Id)).ToListAsync();
+                var roles = await _db.Role.Where(x => dto.RoleIds.Contains(x.Id)).ToListAsync();
                 dto.RoleNames = roles.Select(s => s.Name).ToList();
                 foreach (var organizationId in dto.OrganizationIds)
                 {
                     string organizationName = "";
                     List<OrganizationResponse> outList = new List<OrganizationResponse>();
-                    var organization = organizationDtos.FirstOrDefault(x => x.Id.ToGuid() == organizationId);
+                    var organization = organizationDtos.FirstOrDefault(x => x.Id.ToInt() == organizationId);
                     GetCurrentAndParents(organizationDtos, outList, organization);
                     foreach (var obj in outList)
                     {
@@ -156,16 +162,16 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task Add(UserAddRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
                 User user = _mapper.Map<User>(info.User);
-                BeforeAdd(user);
+                //BeforeAdd(user);
                 //密码暂写死
                 user.PassWord = user.UserName;
-                await db.AddAsync(user);
-                await db.SaveChangesAsync();
-                await SetOtherInfo(db, user.Id, info.User.OrganizationIds, info.ModuleIds, info.OperateIds, info.RoleIds);
-                await db.SaveChangesAsync();
+                await _db.AddAsync(user);
+                await _db.SaveChangesAsync();
+                await SetOtherInfo(_db, user.Id, info.User.OrganizationIds, info.ModuleIds, info.OperateIds, info.RoleIds);
+                await _db.SaveChangesAsync();
             }
         }
         /// <summary>
@@ -175,16 +181,16 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task Modify(UserModifyRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                await db.ExecSqlNoQuery("delete Organization_User where UserId=@UserId", new SqlParameter("UserId", info.Id));
-                await db.ExecSqlNoQuery("delete Role_User where UserId=@UserId", new SqlParameter("UserId",info.Id));
-                await db.ExecSqlNoQuery("delete Privilege where MasterValue=@MasterValue", new SqlParameter("MasterValue", info.Id));
-                var user = await db.User.FindByIdAsync(info.Id);
+                await _db.ExecSqlNoQuery("delete Organization_User where UserId=@UserId", new SqlParameter("UserId", info.Id));
+                await _db.ExecSqlNoQuery("delete Role_User where UserId=@UserId", new SqlParameter("UserId",info.Id));
+                await _db.ExecSqlNoQuery("delete Privilege where MasterValue=@MasterValue", new SqlParameter("MasterValue", info.Id));
+                var user = await _db.User.FindByIdAsync(info.Id);
                 _mapper.Map(info.User, user);
-                BeforeModify(user);
-                await SetOtherInfo(db, info.Id, info.User.OrganizationIds, info.ModuleIds, info.OperateIds, info.RoleIds);
-                await db.SaveChangesAsync();
+                //BeforeModify(user);
+                await SetOtherInfo(_db, info.Id, info.User.OrganizationIds, info.ModuleIds, info.OperateIds, info.RoleIds);
+                await _db.SaveChangesAsync();
             }
         }
         /// <summary>
@@ -194,12 +200,12 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task ModifyProfile(ProfileRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var user = await db.User.FindByIdAsync(info.Id);
+                var user = await _db.User.FindByIdAsync(info.Id);
                 _mapper.Map(info, user);
-                BeforeModify(user);
-                await db.SaveChangesAsync();
+                //BeforeModify(user);
+                await _db.SaveChangesAsync();
             }
         }
         /// <summary>
@@ -209,16 +215,17 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task ChangePassWord(PassWordRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var user = await db.User.FindByIdAsync(CurrentUser.UserId);
+                //var user = await _db.User.FindByIdAsync(CurrentUser.UserId);
+                var user = await _db.User.FindByIdAsync(1);
                 if (info.OldPassWord != user.PassWord)
                     throw new ApiException("旧密码不正确!");
                 else if(info.NewPassWord!= info.NewPassWordConfirm)
                     throw new ApiException("两次输入密码不一致!");
                 user.PassWord = info.NewPassWord;
-                BeforeModify(user);
-                await db.SaveChangesAsync();
+                //BeforeModify(user);
+                await _db.SaveChangesAsync();
             }
 
         }
@@ -231,9 +238,9 @@ namespace Windows.Admin.Application
         /// <param name="operateIds"></param>
         /// <param name="roleIds"></param>
         /// <returns></returns>
-        private async Task SetOtherInfo(JyzContext db,Guid userId,List<Guid> organizationIds, List<Guid> moduleIds, List<Guid> operateIds, List<Guid> roleIds)
+        private async Task SetOtherInfo(AdminDbContext db,int userId,List<int> organizationIds, List<int> moduleIds, List<int> operateIds, List<int> roleIds)
         {
-            foreach (Guid id in organizationIds)
+            foreach (int id in organizationIds)
             {
                 Organization_User ou = new Organization_User()
                 {
@@ -242,17 +249,17 @@ namespace Windows.Admin.Application
                 };
                 await db.AddAsync(ou);
             }
-            foreach (Guid id in moduleIds)
+            foreach (int id in moduleIds)
             {
                 Privilege privilege = new Privilege(MasterEnum.User, userId, AccessEnum.Module, id);
                 await db.AddAsync(privilege);
             }
-            foreach (Guid id in operateIds)
+            foreach (int id in operateIds)
             {
                 Privilege privilege = new Privilege(MasterEnum.User, userId, AccessEnum.Operate, id);
                 await db.AddAsync(privilege);
             }
-            foreach (Guid id in roleIds)
+            foreach (int id in roleIds)
             {
                 Role_User model = new Role_User();
                 model.UserId = userId;

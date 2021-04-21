@@ -6,6 +6,6 @@ namespace Windows.Admin.Application
 {
     public class OrganizationModifyRequest : OrganizationAddRequest
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
     }
 }

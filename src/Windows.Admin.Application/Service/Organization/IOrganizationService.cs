@@ -18,7 +18,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<OrganizationResponse> Detail(Guid id);
+        Task<OrganizationResponse> Detail(int id);
         /// <summary>
         /// 获取部门列表
         /// </summary>
@@ -41,6 +41,6 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<List<Guid>> GetCurrentAndChildrenIdList(Guid id);
+        Task<List<int>> GetCurrentAndChildrenIdList(int id);
     }
 }

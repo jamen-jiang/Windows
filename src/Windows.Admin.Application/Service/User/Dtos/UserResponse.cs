@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Windows.Application.Shared.Dto;
 
 namespace Windows.Admin.Application
 {
     public class UserResponse: BaseResponse
     {
-        public Guid Id { get; set; }
-        public List<Guid> OrganizationIds { get; set; } = new List<Guid>();
+        public int Id { get; set; }
+        public List<int> OrganizationIds { get; set; } = new List<int>();
         public List<string> OrganizationNames { get; set; } = new List<string>();
-        public List<Guid> RoleIds { get; set; } = new List<Guid>();
+        public List<int> RoleIds { get; set; } = new List<int>();
         public List<string> RoleNames { get; set; } = new List<string>();
         public string UserName { get; set; }
         public string Name { get; set; }

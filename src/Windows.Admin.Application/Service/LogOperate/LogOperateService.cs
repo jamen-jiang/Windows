@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
-using Jyz.Domain;
-using Jyz.Infrastructure;
-using Jyz.Infrastructure.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Windows.Admin.Domain;
+using Windows.Admin.Infrastructure.EFCore;
+using Windows.Application.Shared.Dto;
+using Windows.Application.Shared.Service;
+using Windows.Infrastructure.EFCore;
+using Windows.Infrastructure.Utils;
 
 namespace Windows.Admin.Application
 {
@@ -16,10 +16,12 @@ namespace Windows.Admin.Application
     {
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _context;
-        public LogOperateService(IHttpContextAccessor context, IMapper mapper)
+        private readonly AdminDbContext _db;
+        public LogOperateService(AdminDbContext db,IHttpContextAccessor context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
+            _db = db;
         }
         /// <summary>
         /// 获取操作日志列表
@@ -28,10 +30,10 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<PageResponse<LogOperateResponse>> Query(PageRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
                 PageResponse<LogOperateResponse> model = new PageResponse<LogOperateResponse>();
-                var query = db.LogOperate.AsNoTracking();
+                var query = _db.LogOperate.AsNoTracking();
                 int totalCount = await query.CountAsync();
                 List<LogOperate> list = await query.Paging(info.PageIndex, info.PageSize).ToListAsync();
                 model.PageIndex = info.PageIndex;
@@ -55,10 +57,10 @@ namespace Windows.Admin.Application
             info.Os = client.OS.ToString();
             info.IP = IPUtils.GetIP(_context?.HttpContext?.Request);
             var model = _mapper.Map<LogOperate>(info);
-            using (var db = NewDB())
+            using (_db)
             {
-                await db.AddAsync(model);
-                await db.SaveChangesAsync();
+                await _db.AddAsync(model);
+                await _db.SaveChangesAsync();
             }
         }
     }

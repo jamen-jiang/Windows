@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Windows.Application.Shared.Dto;
+using Windows.SeedWork;
 
 namespace Windows.Admin.Application
 {

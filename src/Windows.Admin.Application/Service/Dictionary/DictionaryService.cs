@@ -1,16 +1,23 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Admin.Infrastructure.EFCore;
+using Windows.Application.Shared.Service;
+using Windows.Infrastructure.EFCore;
+using Windows.Infrastructure.Extensions;
 
 namespace Windows.Admin.Application
 {
     public class DictionaryService : BaseService,IDictionaryService
     {
         private readonly IMapper _mapper;
-        public DictionaryService(IMapper mapper)
+        protected AdminDbContext _db;
+        public DictionaryService(AdminDbContext db,IMapper mapper)
         {
+            _db = db;
             _mapper = mapper;
         }
         /// <summary>
@@ -19,9 +26,9 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<List<ComboBoxResponse>> GetCategorys()
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var data = await db.Dictionary.AsNoTracking().Where(x => x.PId == null).ToListAsync();
+                List<Domain.Dictionary> data = await _db.Dictionary.AsNoTracking().Where(x => x.PId == null).ToListAsync();
                 List<ComboBoxResponse> list = new List<ComboBoxResponse>();
                 foreach (var d in data)
                 {
@@ -41,10 +48,10 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<List<DictionaryResponse>> Query()
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var dictionarys = await db.Dictionary.AsNoTracking().ToListAsync();
-                var dtos =  _mapper.Map<List<DictionaryResponse>>(dictionarys);
+                List<Domain.Dictionary> dictionarys = await _db.Dictionary.AsNoTracking().ToListAsync();
+                List<DictionaryResponse> dtos =  _mapper.Map<List<DictionaryResponse>>(dictionarys);
                 List<DictionaryResponse> list = new List<DictionaryResponse>();
                 CreateTree(null, dtos, list);
                 return list;
@@ -55,11 +62,11 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<DictionaryResponse> Detail(Guid id)
+        public async Task<DictionaryResponse> Detail(int id)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var model = await db.Dictionary.FindByIdAsync(id);
+                Domain.Dictionary model = await _db.Dictionary.FindByIdAsync(id);
                 return _mapper.Map<DictionaryResponse>(model);
             }
         }
@@ -70,17 +77,17 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task Add(DictionaryAddRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                Dictionary model = _mapper.Map<Dictionary>(info);
+                Domain.Dictionary model = _mapper.Map<Domain.Dictionary>(info);
                 if (info.PId != null)
                 {
-                    var pModel = await db.Dictionary.FindByIdAsync(info.PId.ToGuid());
+                    Domain.Dictionary pModel = await _db.Dictionary.FindByIdAsync(info.PId.ToInt());
                     model.Category = pModel.Category;
                     model.Name = pModel.Name;
                 }
-                await db.AddEntityAsync(model);
-                await db.SaveChangesAsync();
+                await _db.AddEntityAsync(model);
+                await _db.SaveChangesAsync();
             }
         }
         /// <summary>
@@ -90,18 +97,18 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task Modify(DictionaryModifyRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var model = await db.Dictionary.FindByIdAsync(info.Id);
+                Domain.Dictionary model = await _db.Dictionary.FindByIdAsync(info.Id);
                 _mapper.Map(info, model);
-                db.ModifyEntity(model);
+                //_db.ModifyEntity(model);
                 if (info.PId != null)
                 {
-                    var pModel = await db.Dictionary.FindByIdAsync(info.PId.ToGuid());
+                    Domain.Dictionary pModel = await _db.Dictionary.FindByIdAsync(info.PId.ToInt());
                     model.Category = pModel.Category;
                     model.Name = pModel.Name;
                 }
-                await db.SaveChangesAsync();
+                await _db.SaveChangesAsync();
             }
         }
     }

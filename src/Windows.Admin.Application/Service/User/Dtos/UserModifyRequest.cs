@@ -6,6 +6,6 @@ namespace Windows.Admin.Application
 {
     public class UserModifyRequest:UserAddRequest
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
     }
 }

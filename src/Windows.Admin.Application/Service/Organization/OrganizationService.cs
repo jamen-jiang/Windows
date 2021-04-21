@@ -1,25 +1,28 @@
 ﻿using AutoMapper;
-using Jyz.Domain;
-using Jyz.Domain.Enums;
-using Jyz.Infrastructure;
-using Jyz.Infrastructure.Data;
-using Jyz.Infrastructure.Data.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Admin.Domain;
+using Windows.Admin.Domain.Enums;
+using Windows.Admin.Infrastructure.EFCore;
+using Windows.Application.Shared.Service;
+using Windows.Infrastructure.EFCore;
+using Windows.Infrastructure.Extensions;
 
 namespace Windows.Admin.Application
 {
     public class OrganizationService : BaseService,IOrganizationService
     {
         private readonly IMapper _mapper;
-        public OrganizationService(IMapper mapper)
+        private readonly AdminDbContext _db;
+        public OrganizationService(AdminDbContext db,IMapper mapper)
         {
             _mapper = mapper;
+            _db = db;
         }
         /// <summary>
         /// 获取部门列表
@@ -28,9 +31,9 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<List<OrganizationResponse>> Query(OrganizationRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var query = db.Organization.AsNoTracking();
+                var query = _db.Organization.AsNoTracking();
                 if (!info.Name.IsNullOrEmpty())
                     query = query.Where(x => x.Name.Contains(info.Name));
                 List<Organization> organizations = await query.ToListAsync();
@@ -45,11 +48,11 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<OrganizationResponse> Detail(Guid id)
+        public async Task<OrganizationResponse> Detail(int id)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var organization = await db.Organization.FindByIdAsync(id);
+                var organization = await _db.Organization.FindByIdAsync(id);
                 return _mapper.Map<OrganizationResponse>(organization);
             }
         }
@@ -59,9 +62,9 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<List<ComboBoxTreeResponse>> GetOrganizations()
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var organizations = await db.Organization.AsNoTracking().ToListAsync();
+                var organizations = await _db.Organization.AsNoTracking().ToListAsync();
                 var dtos = _mapper.Map<List<ComboBoxTreeResponse>>(organizations);
                 var list = new List<ComboBoxTreeResponse>();
                 CreateTree(null, dtos, list);
@@ -75,14 +78,14 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task Add(OrganizationAddRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
                 Organization organization = _mapper.Map<Organization>(info.Organization);
-                BeforeAdd(organization);
-                await db.Organization.AddAsync(organization);
-                await db.SaveChangesAsync();
-                await SetOtherInfo(db, organization.Id, info.ModuleIds, info.OperateIds, info.RoleIds);
-                await db.SaveChangesAsync();
+                //BeforeAdd(organization);
+                await _db.Organization.AddAsync(organization);
+                await _db.SaveChangesAsync();
+                await SetOtherInfo(_db, organization.Id, info.ModuleIds, info.OperateIds, info.RoleIds);
+                await _db.SaveChangesAsync();
             }
         }
         /// <summary>
@@ -92,15 +95,15 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task Modify(OrganizationModifyRequest info)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                await db.ExecSqlNoQuery("delete Role_Organization where OrganizationId=@OrganizationId", new SqlParameter("OrganizationId", info.Id));
-                await db.ExecSqlNoQuery("delete Privilege where MasterValue=@MasterValue", new SqlParameter("MasterValue", info.Id));
-                var organization = await db.Organization.FindByIdAsync(info.Id);
+                await _db.ExecSqlNoQuery("delete Role_Organization where OrganizationId=@OrganizationId", new SqlParameter("OrganizationId", info.Id));
+                await _db.ExecSqlNoQuery("delete Privilege where MasterValue=@MasterValue", new SqlParameter("MasterValue", info.Id));
+                var organization = await _db.Organization.FindByIdAsync(info.Id);
                 _mapper.Map(info.Organization, organization);
-                db.ModifyEntity(organization);
-                await SetOtherInfo(db, info.Id, info.ModuleIds, info.OperateIds, info.RoleIds);
-                await db.SaveChangesAsync();
+                _db.ModifyEntity(organization);
+                await SetOtherInfo(_db, info.Id, info.ModuleIds, info.OperateIds, info.RoleIds);
+                await _db.SaveChangesAsync();
             }
         }
         /// <summary>
@@ -108,12 +111,12 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<List<Guid>> GetCurrentAndChildrenIdList(Guid id)
+        public async Task<List<int>> GetCurrentAndChildrenIdList(int id)
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                var organizations = await db.Organization.AsNoTracking().ToListAsync();
-                List<Guid> idList = new List<Guid>();
+                var organizations = await _db.Organization.AsNoTracking().ToListAsync();
+                List<int> idList = new List<int>();
                 idList.Add(id);
                 GetChildrenOrganizationIdList(organizations, idList, id);
                 return idList;
@@ -128,19 +131,19 @@ namespace Windows.Admin.Application
         /// <param name="operateIds"></param>
         /// <param name="roleIds"></param>
         /// <returns></returns>
-        private async Task SetOtherInfo(JyzContext db, Guid id, List<Guid> moduleIds, List<Guid> operateIds, List<Guid> roleIds)
+        private async Task SetOtherInfo(AdminDbContext db, int id, List<int> moduleIds, List<int> operateIds, List<int> roleIds)
         {
-            foreach (Guid mId in moduleIds)
+            foreach (int mId in moduleIds)
             {
                 Privilege privilege = new Privilege(MasterEnum.Organization, id, AccessEnum.Module, mId);
                 await db.AddAsync(privilege);
             }
-            foreach (Guid oId in operateIds)
+            foreach (int oId in operateIds)
             {
                 Privilege privilege = new Privilege(MasterEnum.Organization, id, AccessEnum.Operate, oId);
                 await db.AddAsync(privilege);
             }
-            foreach (Guid rId in roleIds)
+            foreach (int rId in roleIds)
             {
                 Role_Organization model = new Role_Organization(rId, id);
                 await db.AddAsync(model);
@@ -152,13 +155,13 @@ namespace Windows.Admin.Application
         /// <param name="organizations"></param>
         /// <param name="idList"></param>
         /// <param name="id"></param>
-        private void GetChildrenOrganizationIdList(List<Organization> organizations, List<Guid> idList, Guid organizationd)
+        private void GetChildrenOrganizationIdList(List<Organization> organizations, List<int> idList, int organizationd)
         {
             var childrens = organizations.Where(x => x.PId == organizationd).Select(s=>s.Id).ToList();
             if (childrens.Count > 0)
             {
                 idList.AddRange(childrens);
-                foreach (Guid id in childrens)
+                foreach (int id in childrens)
                 {
                     GetChildrenOrganizationIdList(organizations, idList, id);
                 }

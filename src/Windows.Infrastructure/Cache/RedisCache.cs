@@ -48,7 +48,7 @@ namespace Jyz.Infrastructure
                 }
                 try
                 {
-                    this._connection = ConnectionMultiplexer.Connect(AppSetting.SystemConfig.RedisConnectionString);
+                    //this._connection = ConnectionMultiplexer.Connect(AppSetting.SystemConfig.RedisConnectionString);
                 }
                 catch (Exception)
                 {

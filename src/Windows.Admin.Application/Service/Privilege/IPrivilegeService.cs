@@ -1,6 +1,4 @@
-﻿using Jyz.Domain.Enums;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Windows.Admin.Application
@@ -12,6 +10,6 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<List<OperateUrlResponse>> GetOperateUrlsByUserId(Guid userId);
+        Task<List<OperateUrlResponse>> GetOperateUrlsByUserId(int userId);
     }
 }

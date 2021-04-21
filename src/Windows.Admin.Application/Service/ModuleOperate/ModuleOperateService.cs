@@ -1,9 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Admin.Domain;
 using Windows.Admin.Domain.Enums;
+using Windows.Admin.Infrastructure.EFCore;
+using Windows.Admin.Infrastructure.EFCore.Extensions;
+using Windows.Application.Shared.Service;
+using Windows.Infrastructure.EFCore;
 using Windows.Infrastructure.Extensions;
 
 namespace Windows.Admin.Application
@@ -11,9 +17,11 @@ namespace Windows.Admin.Application
     public class ModuleOperateService:BaseService,IModuleOperateService
     {
         private readonly IMapper _mapper;
-        public ModuleOperateService(IMapper mapper)
+        private readonly AdminDbContext _db;
+        public ModuleOperateService(AdminDbContext db,IMapper mapper)
         {
             _mapper = mapper;
+            _db = db;
         }
         /// <summary>
         /// 获取模块操作树
@@ -21,15 +29,15 @@ namespace Windows.Admin.Application
         /// <returns></returns>
         public async Task<List<ModuleOperateResponse>> GetModuleOperates()
         {
-            using (var db = NewDB())
+            using (_db)
             {
-                List<Module> modules = await db.Module.AsNoTracking().ToListAsync();
+                List<Module> modules = await _db.Module.AsNoTracking().ToListAsync();
                 var dtos = _mapper.Map<List<ModuleOperateResponse>>(modules);
-                var operates = db.Operate.AsNoTracking().ToList();
+                var operates = _db.Operate.AsNoTracking().ToList();
                 var operateDtos = _mapper.Map<List<OperateResponse>>(operates);
                 foreach (var m in dtos)
                 {
-                    m.Operates = operateDtos.Where(x => x.ModuleId == m.Id.ToGuid()).ToList();
+                    m.Operates = operateDtos.Where(x => x.ModuleId == m.Id.ToInt()).ToList();
                 }
                 List<ModuleOperateResponse> list = new List<ModuleOperateResponse>();
                 CreateTree(null, dtos, list);
@@ -41,36 +49,37 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<List<ModuleOperateResponse>> GetAuthorizeModuleOperates(Guid userId)
+        public async Task<List<ModuleOperateResponse>> GetAuthorizeModuleOperates(int userId)
         {
-            using (var db = base.NewDB())
+            using (_db)
             {
                 List<Module> modules = null;
                 List<Operate> operates = null;
                 //如果是管理员
-                if (userId == AppSetting.SystemConfig.Admin.ToGuid())
+                //if (userId == AppSetting.SystemConfig.Admin.ToGuid())
+                if (userId == 1)
                 {
                     //取出所有模块所有操作
-                    modules = await db.Module.AsNoTracking().OrderBy(o => o.Sort).ToListAsync();
-                    operates = await db.Operate.AsNoTracking().ToListAsync();
+                    modules = await _db.Module.AsNoTracking().OrderBy(o => o.Sort).ToListAsync();
+                    operates = await _db.Operate.AsNoTracking().ToListAsync();
                 }
                 else
                 {
-                    var user = await db.User.Include(x=>x.Organization_User).Include(x=>x.Role_User).FindByIdAsync(userId);
+                    var user = await _db.User.Include(x=>x.Organization_User).Include(x=>x.Role_User).FindByIdAsync(userId);
                     var organizationIds = user.Organization_User.Select(s => s.OrganizationId).ToArray();
-                    var userRoleIds = await db.Role.GetByUserId(userId).Select(s => s.Id).ToArrayAsync();
-                    var organizationRoleIds = await db.Role.GetByOrganizationIds(organizationIds).Select(s => s.Id).ToArrayAsync();
-                    List<Privilege> privilegeList = await db.Privilege.GetByMasterValues(userId, organizationIds, userRoleIds, organizationRoleIds).ToListAsync();
-                    Guid[] moduleIds = privilegeList.Where(x => x.Access == AccessEnum.Module.ToString()).Select(s => s.AccessValue).ToArray();
-                    Guid[] operateIds = privilegeList.Where(x => x.Access == AccessEnum.Operate.ToString()).Select(s => s.AccessValue).ToArray();
-                    modules = await db.Module.Where(x => moduleIds.Contains(x.Id)).OrderBy(o => o.Sort).ToListAsync();
-                    operates = await db.Operate.Where(x => operateIds.Contains(x.Id)).ToListAsync();
+                    var userRoleIds = await _db.Role.GetByUserId(userId).Select(s => s.Id).ToArrayAsync();
+                    var organizationRoleIds = await _db.Role.GetByOrganizationIds(organizationIds).Select(s => s.Id).ToArrayAsync();
+                    List<Privilege> privilegeList = await _db.Privilege.GetByMasterValues(userId, organizationIds, userRoleIds, organizationRoleIds).ToListAsync();
+                    int[] moduleIds = privilegeList.Where(x => x.Access == AccessEnum.Module.ToString()).Select(s => s.AccessValue).ToArray();
+                    int[] operateIds = privilegeList.Where(x => x.Access == AccessEnum.Operate.ToString()).Select(s => s.AccessValue).ToArray();
+                    modules = await _db.Module.Where(x => moduleIds.Contains(x.Id)).OrderBy(o => o.Sort).ToListAsync();
+                    operates = await _db.Operate.Where(x => operateIds.Contains(x.Id)).ToListAsync();
                 }
                 var moduleDtos = _mapper.Map<List<ModuleOperateResponse>>(modules);
                 var operateDtos = _mapper.Map<List<OperateResponse>>(operates);
                 foreach (var m in moduleDtos)
                 {
-                    m.Operates = operateDtos.Where(x => x.ModuleId == m.Id.ToGuid()).ToList();
+                    m.Operates = operateDtos.Where(x => x.ModuleId == m.Id.ToInt()).ToList();
                 }
                 List<ModuleOperateResponse> list = new List<ModuleOperateResponse>();
                 CreateTree(null, moduleDtos, list);
@@ -83,13 +92,13 @@ namespace Windows.Admin.Application
         /// <param name="master"></param>
         /// <param name="masterValue"></param>
         /// <returns></returns>
-        public async Task<AuthorizeModuleOperateIdsResponse> GetAuthorizeModuleOperateIds(MasterEnum master, Guid masterValue)
+        public async Task<AuthorizeModuleOperateIdsResponse> GetAuthorizeModuleOperateIds(MasterEnum master, int masterValue)
         {
-            using (var db = NewDB())
+            using (_db)
             {
                 AuthorizeModuleOperateIdsResponse response = new AuthorizeModuleOperateIdsResponse();
-                response.ModuleIds = await db.Privilege.Get(master, AccessEnum.Module, masterValue).Select(s => s.AccessValue).ToListAsync();
-                response.OperateIds = await db.Privilege.Get(master, AccessEnum.Operate, masterValue).Select(s => s.AccessValue).ToListAsync();
+                response.ModuleIds = await _db.Privilege.Get(master, AccessEnum.Module, masterValue).Select(s => s.AccessValue).ToListAsync();
+                response.OperateIds = await _db.Privilege.Get(master, AccessEnum.Operate, masterValue).Select(s => s.AccessValue).ToListAsync();
                 return response;
             }
         }

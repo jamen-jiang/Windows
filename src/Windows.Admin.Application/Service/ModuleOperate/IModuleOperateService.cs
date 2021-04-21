@@ -1,8 +1,6 @@
-﻿using Jyz.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Admin.Domain.Enums;
 
 namespace Windows.Admin.Application
 {
@@ -13,7 +11,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<List<ModuleOperateResponse>> GetAuthorizeModuleOperates(Guid userId);
+        Task<List<ModuleOperateResponse>> GetAuthorizeModuleOperates(int userId);
         /// <summary>
         /// 获取模块操作树
         /// </summary>
@@ -25,6 +23,6 @@ namespace Windows.Admin.Application
         /// <param name="master"></param>
         /// <param name="masterValue"></param>
         /// <returns></returns>
-        Task<AuthorizeModuleOperateIdsResponse> GetAuthorizeModuleOperateIds(MasterEnum master, Guid masterValue);
+        Task<AuthorizeModuleOperateIdsResponse> GetAuthorizeModuleOperateIds(MasterEnum master, int masterValue);
     }
 }

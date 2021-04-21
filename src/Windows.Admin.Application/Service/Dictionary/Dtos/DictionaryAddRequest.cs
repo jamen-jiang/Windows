@@ -6,7 +6,7 @@ namespace Windows.Admin.Application
 {
     public class DictionaryAddRequest
     {
-        public Guid? PId { get; set; }
+        public int? PId { get; set; }
         /// <summary>
         /// 字典类型
         /// </summary>

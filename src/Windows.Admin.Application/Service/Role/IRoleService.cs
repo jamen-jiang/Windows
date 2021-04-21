@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Application.Shared.Dto;
 
 namespace Windows.Admin.Application
 {
@@ -11,7 +12,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<RoleResponse> Detail(Guid id);
+        Task<RoleResponse> Detail(int id);
         /// <summary>
         /// 获取角色列表
         /// </summary>
@@ -23,13 +24,13 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<List<RoleResponse>> GetUserRoles(Guid userId);
+        Task<List<RoleResponse>> GetUserRoles(int userId);
         /// <summary>
         /// 根据部门Id获取角色列表
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<List<RoleResponse>> GetOrganizationRoles(Guid organizationId);
+        Task<List<RoleResponse>> GetOrganizationRoles(int organizationId);
         /// <summary>
         /// 角色信息保存
         /// </summary>

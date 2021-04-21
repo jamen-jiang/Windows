@@ -22,7 +22,7 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<DictionaryResponse> Detail(Guid id);
+        Task<DictionaryResponse> Detail(int id);
         /// <summary>
         /// 添加字典
         /// </summary>

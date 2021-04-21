@@ -6,11 +6,15 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="UAParser" Version="3.1.46" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Windows.Admin.Domain\Windows.Admin.Domain.csproj" />
+    <ProjectReference Include="..\Windows.Admin.Infrastructure.EFCore\Windows.Admin.Infrastructure.EFCore.csproj" />
     <ProjectReference Include="..\Windows.Admin.Infrastructure\Windows.Admin.Infrastructure.csproj" />
+    <ProjectReference Include="..\Windows.Api.Shared\Windows.Api.Shared.csproj" />
+    <ProjectReference Include="..\Windows.Application.Shared\Windows.Application.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,8 @@
 ﻿using Jyz.Infrastructure;
 using System;
 using System.Collections.Generic;
+using Windows.Application.Shared.Dto;
+using Windows.SeedWork;
 
 namespace Windows.Admin.Application
 {

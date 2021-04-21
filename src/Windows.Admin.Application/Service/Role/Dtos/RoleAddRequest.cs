@@ -7,9 +7,9 @@ namespace Windows.Admin.Application
     public class RoleAddRequest
     {
         public RoleInfo Role { get; set; }
-        public List<Guid> UserIds { get; set; }
-        public List<Guid> ModuleIds { get; set; }
-        public List<Guid> OperateIds { get; set; }
+        public List<int> UserIds { get; set; }
+        public List<int> ModuleIds { get; set; }
+        public List<int> OperateIds { get; set; }
     }
     public class RoleInfo
     {

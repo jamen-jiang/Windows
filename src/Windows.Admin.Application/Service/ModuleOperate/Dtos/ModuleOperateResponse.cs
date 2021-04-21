@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Windows.SeedWork;
 
 namespace Windows.Admin.Application
 {

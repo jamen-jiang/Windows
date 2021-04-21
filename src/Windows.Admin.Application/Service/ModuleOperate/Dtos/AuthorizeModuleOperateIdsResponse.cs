@@ -6,7 +6,7 @@ namespace Windows.Admin.Application
 {
     public class AuthorizeModuleOperateIdsResponse
     {
-        public List<Guid> ModuleIds { get; set; } = new List<Guid>();
-        public List<Guid> OperateIds { get; set; } = new List<Guid>();
+        public List<int> ModuleIds { get; set; } = new List<int>();
+        public List<int> OperateIds { get; set; } = new List<int>();
     }
 }

@@ -6,6 +6,6 @@ namespace Windows.Admin.Application
 {
     public class RoleModifyRequest: RoleAddRequest
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
     }
 }

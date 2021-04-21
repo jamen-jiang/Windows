@@ -7,13 +7,13 @@ namespace Windows.Admin.Application
     public class UserAddRequest
     {
         public UserInfo User { get; set; }
-        public List<Guid> RoleIds { get; set; }
-        public List<Guid> ModuleIds { get; set; }
-        public List<Guid> OperateIds { get; set; }
+        public List<int> RoleIds { get; set; }
+        public List<int> ModuleIds { get; set; }
+        public List<int> OperateIds { get; set; }
     }
     public class UserInfo
     {
-        public List<Guid> OrganizationIds { get; set; }
+        public List<int> OrganizationIds { get; set; }
         public string UserName { get; set; }
         public string Name { get; set; }
         public string MobilePhone { get; set; }

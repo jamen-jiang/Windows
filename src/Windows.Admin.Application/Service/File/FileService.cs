@@ -9,22 +9,28 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Admin.Infrastructure.EFCore;
+using Windows.Api.Shared;
+using Windows.Application.Shared.Service;
+using Windows.Infrastructure.Utils;
 
 namespace Windows.Admin.Application
 {
     public class FileService : BaseService, IFileService
     {
         private readonly IWebHostEnvironment _hostingEnv;
-        public FileService(IWebHostEnvironment hostingEnv)
+        private readonly AdminDbContext _db;
+        public FileService(AdminDbContext db,IWebHostEnvironment hostingEnv)
         {
             _hostingEnv = hostingEnv;
+            _db = db;
         }
         public async Task UploadAsync(IFormFile file)
         {
             string md5 = Utils.GetHash<MD5>(file.OpenReadStream());
-            using (var db = NewDB())
+            using (_db)
             {
-                var obj = await db.File.FirstOrDefaultAsync(x => x.Md5 == md5);
+                var obj = await _db.File.FirstOrDefaultAsync(x => x.Md5 == md5);
                 if (obj == null)
                 { 
                     

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Windows.Application.Shared.Dto;
 
 namespace Windows.Admin.Application
 {
@@ -23,13 +24,13 @@ namespace Windows.Admin.Application
         /// </summary>
         /// <param name="roleId"></param>
         /// <returns></returns>
-        Task<List<UserResponse>> GetRoleUsers(Guid roleId);
+        Task<List<UserResponse>> GetRoleUsers(int roleId);
         /// <summary>
         /// 根据id获取user
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<UserResponse> Detail(Guid id);
+        Task<UserResponse> Detail(int id);
         /// <summary>
         /// 添加用户
         /// </summary>

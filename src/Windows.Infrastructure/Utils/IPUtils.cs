@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
+using Windows.Infrastructure.Extensions;
 
 namespace Windows.Infrastructure.Utils
 {

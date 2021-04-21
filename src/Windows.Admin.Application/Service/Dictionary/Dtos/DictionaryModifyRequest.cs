@@ -6,6 +6,6 @@ namespace Windows.Admin.Application
 {
     public class DictionaryModifyRequest:DictionaryAddRequest
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
     }
 }

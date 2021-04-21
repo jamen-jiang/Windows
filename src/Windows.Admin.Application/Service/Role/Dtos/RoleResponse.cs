@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Application.Shared.Dto;
 
 namespace Windows.Admin.Application
 {

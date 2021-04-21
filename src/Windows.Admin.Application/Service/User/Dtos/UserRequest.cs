@@ -6,7 +6,7 @@ namespace Windows.Admin.Application
 {
     public class UserRequest
     {
-        public Guid OrganizationId { get; set; }
+        public int OrganizationId { get; set; }
         public string Name { get; set; }
         public string UserName { get; set; }
         public DateTime? CreatedOnStart { get; set; }

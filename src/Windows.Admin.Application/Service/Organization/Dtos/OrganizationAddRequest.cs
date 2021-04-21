@@ -7,13 +7,13 @@ namespace Windows.Admin.Application
     public class OrganizationAddRequest
     {
         public OrganizationInfo Organization { get; set; }
-        public List<Guid> RoleIds { get; set; }
-        public List<Guid> ModuleIds { get; set; }
-        public List<Guid> OperateIds { get; set; }
+        public List<int> RoleIds { get; set; }
+        public List<int> ModuleIds { get; set; }
+        public List<int> OperateIds { get; set; }
     }
     public class OrganizationInfo
     {
-        public Guid? PId { get; set; }
+        public int? PId { get; set; }
         public int Type { get; set; }
         public string Name { get; set; }
         public string Telephone { get; set; }

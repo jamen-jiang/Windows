@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Windows.Infrastructure.Utils;
 
 namespace Jyz.Infrastructure
 {
@@ -45,7 +46,7 @@ namespace Jyz.Infrastructure
             if (arg is DateTime || arg is DateTime?)
                 return ((DateTime)arg).ToString("yyyyMMddHHmmss");
 
-            if (arg is string || arg is ValueType || arg is Nullable)
+            if (arg is string || arg is ValueType || arg is null)
                 return arg.ToString();
 
             if (arg != null)

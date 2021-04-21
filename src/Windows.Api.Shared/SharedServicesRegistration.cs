@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using Windows.Infrastructure.EFCore;
 
 namespace Windows.Api.Shared
 {
